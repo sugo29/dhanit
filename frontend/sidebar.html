@@ -1,0 +1,169 @@
+<!-- SIDEBAR COMPONENT -->
+<div class="sidebar" id="sidebar">
+    <div class="logo">
+        <div class="logo-icon">D</div>
+        <div class="logo-text">Dhanit</div>
+        <button class="toggle-btn" id="toggleBtn" title="Collapse sidebar">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+    
+    <div class="nav-items">
+        <div class="nav-section-title">My Loan</div>
+        <a href="dashboard.html" class="nav-item" id="nav-dashboard" title="Dashboard">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="loan-applications.html" class="nav-item" id="nav-applications" title="Loan Applications">
+            <div class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <span class="nav-label">Loan Applications</span>
+        </a>
+
+        <div class="nav-section-title" style="margin-top: 16px;">Process</div>
+        <a href="chatbot.html" class="nav-item" id="nav-chatbot" title="Chatbot">
+            <div class="nav-icon"><i class="fas fa-robot"></i></div>
+            <span class="nav-label">Chatbot</span>
+        </a>
+        <a href="verification.html" class="nav-item" id="nav-verification" title="Verification">
+            <div class="nav-icon"><i class="fas fa-search"></i></div>
+            <span class="nav-label">Verification</span>
+        </a>
+        <a href="underwriting.html" class="nav-item" id="nav-underwriting" title="Underwriting">
+            <div class="nav-icon"><i class="fas fa-calculator"></i></div>
+            <span class="nav-label">Underwriting</span>
+        </a>
+        <a href="sanctions.html" class="nav-item" id="nav-sanctions" title="Sanctions">
+            <div class="nav-icon"><i class="fas fa-stamp"></i></div>
+            <span class="nav-label">Sanctions</span>
+        </a>
+
+        <div class="nav-section-title" style="margin-top: 16px;">Insights</div>
+        <a href="settings.html" class="nav-item" id="nav-analytics" title="Insights & Analytics">
+            <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+            <span class="nav-label">Insights & Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item" id="nav-settings" title="Settings">
+            <div class="nav-icon"><i class="fas fa-cog"></i></div>
+            <span class="nav-label">Settings</span>
+        </a>
+    </div>
+
+    <!-- USER PROFILE SECTION AT BOTTOM -->
+    <div class="user-section">
+        <div class="user-profile-bottom">
+            <div class="user-avatar-bottom" id="userAvatarBottom">SR</div>
+            <div class="user-info-bottom">
+                <div class="user-name-bottom" id="userNameBottom">Sarah Rodriguez</div>
+                <div class="user-email-bottom" id="userEmailBottom">sarah@email.com</div>
+            </div>
+        </div>
+        <button class="logout-btn" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    // Sidebar collapse/expand functionality
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleBtn');
+
+    // Initialize sidebar state from localStorage
+    const sidebarState = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (sidebarState) {
+        sidebar.classList.add('collapsed');
+        updateToggleButton();
+    }
+
+    // Toggle button click handler
+    toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sidebar.classList.toggle('collapsed');
+        updateToggleButton();
+        
+        // Save state to localStorage
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+    });
+
+    // Update toggle button icon and title
+    function updateToggleButton() {
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        if (isCollapsed) {
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            toggleBtn.title = 'Expand sidebar';
+        } else {
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            toggleBtn.title = 'Collapse sidebar';
+        }
+    }
+
+    // Set active nav item based on current page
+    function setActiveNavItem() {
+        const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            if (href === currentPage || (currentPage === '' && href === 'dashboard.html')) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    // Call on page load
+    setActiveNavItem();
+
+    // Prevent default link behavior for demo (remove if using real navigation)
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Allow normal navigation
+            setActiveNavItem();
+        });
+    });
+
+    // Function to update user profile in sidebar
+    function updateUserProfile(name, email, initials) {
+        const userNameElement = document.getElementById('userNameBottom');
+        const userEmailElement = document.getElementById('userEmailBottom');
+        const userAvatarElement = document.getElementById('userAvatarBottom');
+        
+        if (userNameElement) userNameElement.textContent = name;
+        if (userEmailElement) userEmailElement.textContent = email;
+        if (userAvatarElement) userAvatarElement.textContent = initials;
+        
+        // Save to localStorage
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userInitials', initials);
+    }
+
+    // Load user profile from localStorage on page load
+    function loadUserProfile() {
+        const savedName = localStorage.getItem('userName');
+        const savedEmail = localStorage.getItem('userEmail');
+        const savedInitials = localStorage.getItem('userInitials');
+        
+        if (savedName && savedEmail && savedInitials) {
+            updateUserProfile(savedName, savedEmail, savedInitials);
+        }
+    }
+
+    // Load user profile when sidebar loads
+    loadUserProfile();
+
+    // Logout button functionality
+    const logoutBtn = document.querySelector('.logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Clear user data
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userInitials');
+            // Redirect to login
+            window.location.href = './login.html';
+        });
+    }
+</script>

@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DhanitAI – AI-Guided Loans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --secondary: #0f172a;
+      --muted: #64748b;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --accent: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--secondary);
+      line-height: 1.6;
+    }
+
+    /* NAVBAR */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e8eef7;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    header.scrolled {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      height: 72px;
+    }
+
+    /* BRAND SECTION */
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 18px;
+      color: #1a2332;
+      letter-spacing: -0.3px;
+    }
+
+    /* RIGHT SECTION - AUTH BUTTONS */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .nav-login {
+      background: transparent;
+      color: #5a6b7a;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-login:hover {
+      color: #1a2332;
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .nav-signup {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .nav-signup:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .nav-signup:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .nav {
+        padding: 12px 16px;
+        height: 64px;
+      }
+
+      .brand-name {
+        font-size: 16px;
+      }
+
+      .nav-login,
+      .nav-signup {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+    }
+
+    /* HERO */
+    .hero {
+      width: 100%;
+      background: linear-gradient(135deg, #e8f1f8 0%, #f0f6fb 50%, #f5f9fc 100%);
+      padding: 80px 24px;
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .hero-wrapper {
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    
+    .hero-content {
+      z-index: 10;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: #1a2332;
+      font-weight: 700;
+    }
+    .hero p {
+      color: #5a6b7a;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: #1a2332;
+      transform: translateY(-2px);
+    }
+    .hero-visual {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      text-align: center;
+      position: relative;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-bubble {
+      background: #fff;
+      padding: 14px 18px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      margin-bottom: 14px;
+      display: inline-block;
+    }
+    
+    /* AI Robot */
+    .ai-robot {
+      position: relative;
+      width: 300px;
+      height: 400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .robot-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle at 30% 30%, rgba(94, 179, 255, 0.25), rgba(42, 157, 255, 0.05));
+      border-radius: 50%;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: blur(50px);
+    }
+    
+    .robot-container {
+      position: relative;
+      z-index: 2;
+      width: 220px;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .robot-head {
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(135deg, #4a9eff 0%, #2a7dd4 100%);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 
+        0 25px 60px rgba(42, 157, 255, 0.35),
+        inset -15px -15px 30px rgba(0, 0, 0, 0.15),
+        inset 15px 15px 30px rgba(255, 255, 255, 0.25);
+      margin-bottom: 15px;
+    }
+    
+    .robot-eyes {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding-top: 45px;
+      position: relative;
+      z-index: 3;
+    }
+    
+    .eye {
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .eye::after {
+      content: '';
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      background: #2a7dd4;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .robot-smile {
+      width: 45px;
+      height: 22px;
+      border: 2.5px solid white;
+      border-top: none;
+      border-radius: 0 0 45px 45px;
+      margin: 22px auto 0;
+      position: relative;
+      z-index: 3;
+    }
+    
+    .robot-body {
+      width: 160px;
+      height: 130px;
+      background: linear-gradient(135deg, #5eb3ff 0%, #3a8fe8 100%);
+      border-radius: 45px;
+      position: relative;
+      box-shadow: 
+        0 30px 70px rgba(94, 179, 255, 0.3),
+        inset -12px -12px 25px rgba(0, 0, 0, 0.12),
+        inset 12px 12px 25px rgba(255, 255, 255, 0.3);
+    }
+    
+    .robot-body::before {
+      content: '';
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      top: 15px;
+      left: 25px;
+      filter: blur(12px);
+    }
+    
+    .robot-body::after {
+      content: '';
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      bottom: 25px;
+      right: 20px;
+      filter: blur(8px);
+    }
+    
+    /* Floating Icons */
+    .floating-icons {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    
+    .float-icon {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: white;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-25px); }
+    }
+    
+    .float-icon:nth-child(1) {
+      top: 40px;
+      left: 20px;
+      animation-delay: 0s;
+    }
+    
+    .float-icon:nth-child(2) {
+      top: 180px;
+      right: 40px;
+      animation-delay: 0.5s;
+    }
+    
+    .float-icon:nth-child(3) {
+      top: 80px;
+      right: 20px;
+      animation-delay: 1s;
+    }
+    
+    .float-icon:nth-child(4) {
+      bottom: 60px;
+      right: 80px;
+      animation-delay: 1.5s;
+    }
+    
+    /* Icon SVGs */
+    .icon-chat {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .icon-clipboard {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .icon-check {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .icon-document {
+      width: 50px;
+      height: 50px;
+    }
+
+    /* WHY SECTION */
+    .why {
+      width: 100%;
+      background: linear-gradient(135deg, #f5f9fc 0%, #f0f6fb 50%, #e8f1f8 100%);
+      padding: 80px 24px;
+    }
+    
+    .why-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    
+    .why-left {
+      position: relative;
+      height: 400px;
+    }
+    
+    .chat-mockup {
+      width: 320px;
+      background: linear-gradient(180deg, #eef2ff, #f8fafc);
+      border-radius: 28px;
+      padding: 14px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: #1a2332;
+    }
+    
+    .chat-header .dot {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+    }
+    
+    .chat-body {
+      padding: 10px;
+    }
+    
+    .chat {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .chat.user {
+      background: #ffffff;
+      align-self: flex-start;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      color: #5a6b7a;
+    }
+    
+    .chat.ai {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    }
+    
+    .chat.ai ul {
+      padding-left: 0;
+      list-style: none;
+      margin: 8px 0;
+    }
+    
+    .chat.ai li {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    
+    .ai-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .ai-note {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    
+    .chat-input {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 16px;
+      padding: 6px;
+      margin-top: 10px;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 14px;
+      background: white;
+      color: #5a6b7a;
+    }
+    
+    .chat-input input::placeholder {
+      color: #cbd5f5;
+    }
+    
+    .chat-input button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    
+    .chat-input button:hover {
+      background: #1e40af;
+    }
+    
+    .why-right h2 {
+      font-size: 36px;
+      color: #1a2332;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    .why-right p {
+      color: #5a6b7a;
+      font-size: 16px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    
+    .why-features {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .feature-icon.green {
+      background: #a8d5a8;
+      color: #6db86d;
+    }
+    
+    .feature-icon.pink {
+      background: #f4c2d8;
+      color: #e88bb8;
+    }
+    
+    .feature-icon.yellow {
+      background: #ffe9a6;
+      color: #ffc966;
+    }
+    
+    .feature-text h3 {
+      font-size: 18px;
+      color: #1a2332;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    
+    .feature-text p {
+      font-size: 14px;
+      color: #5a6b7a;
+      margin: 0;
+    }
+
+    /* MEET DHANIT SECTION */
+    .meet-dhanit {
+      width: 100%;
+      background: white;
+      padding: 80px 24px;
+    }
+    
+    .meet-dhanit-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    .section-header h2 {
+      font-size: 36px;
+      color: #1a2332;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    .section-header p {
+      font-size: 16px;
+      color: #5a6b7a;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-bottom: 80px;
+    }
+    
+    .feature-card {
+      background: linear-gradient(135deg, #f5f9fc 0%, #f0f6fb 100%);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .feature-card-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+    
+    .feature-card-icon.blue {
+      background: linear-gradient(135deg, #5eb3ff 0%, #4a9eff 100%);
+      color: white;
+    }
+    
+    .feature-card-icon.purple {
+      background: linear-gradient(135deg, #7c5cff 0%, #6b4dff 100%);
+      color: white;
+    }
+    
+    .feature-card-icon.teal {
+      background: linear-gradient(135deg, #4dd9d9 0%, #2db8b8 100%);
+      color: white;
+    }
+    
+    .feature-card h3 {
+      font-size: 20px;
+      color: #1a2332;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    
+    .feature-card p {
+      font-size: 14px;
+      color: #5a6b7a;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    .feature-card .btn-primary {
+      background: #3b82f6;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+    
+    .feature-card:nth-child(2) .btn-primary {
+      background: #7c5cff;
+    }
+    
+    .feature-card:nth-child(3) .btn-primary {
+      background: #4dd9d9;
+    }
+    
+    /* LOAN SCHEMES SECTION */
+    .loan-schemes {
+      width: 100%;
+      background: linear-gradient(135deg, #f5f9fc 0%, #f0f6fb 100%);
+      padding: 80px 24px;
+    }
+    
+    .loan-schemes-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .loan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+    
+    .loan-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .loan-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+    }
+    
+    .loan-card h3 {
+      font-size: 22px;
+      color: #1a2332;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+    
+    .loan-requirements {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+    
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #5a6b7a;
+    }
+    
+    .requirement::before {
+      content: '✓';
+      color: #5eb3ff;
+      font-weight: bold;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    
+    .loan-card:nth-child(2) .requirement::before {
+      color: #7c5cff;
+    }
+    
+    .loan-card:nth-child(3) .requirement::before {
+      color: #4dd9d9;
+    }
+    
+    .loan-card .btn-primary {
+      background: #3b82f6;
+      padding: 12px 28px;
+      font-size: 14px;
+      width: 100%;
+    }
+    
+    .loan-card:nth-child(2) .btn-primary {
+      background: #7c5cff;
+    }
+    
+    .loan-card:nth-child(3) .btn-primary {
+      background: #4dd9d9;
+    }
+    
+    @media(max-width: 900px) {
+      .features-grid, .loan-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* COMPARISON */
+    .compare {
+      background: #fff;
+      padding: 80px 24px;
+    }
+    .compare-grid {
+      max-width: 1000px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .compare h3 { margin-bottom: 12px; }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, #1a2332 0%, #0f172a 100%);
+      color: #fff;
+      padding: 80px 24px 40px;
+    }
+    
+    .footer-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-cta {
+      text-align: center;
+      margin-bottom: 60px;
+      padding-bottom: 60px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-cta h2 {
+      font-size: 36px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    .footer-cta p {
+      font-size: 16px;
+      color: #cbd5f5;
+      margin-bottom: 32px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .footer-cta .btn-primary {
+      background: #3b82f6;
+      padding: 16px 40px;
+      font-size: 16px;
+    }
+    
+    .footer-cta .btn-primary:hover {
+      background: #2563eb;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    
+    .footer-column h3 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+    
+    .footer-links a {
+      color: #cbd5f5;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: #fff;
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    
+    @media(max-width: 900px) {
+      .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width: 900px) {
+      .hero, .assistant { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+// Scroll effect on header
+window.addEventListener('scroll', function() {
+  const header = document.getElementById('header');
+  if (window.scrollY > 10) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+});
+
+// Chat input functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.querySelector(".chat-input input");
+  const button = document.querySelector(".chat-input button");
+  
+  if (button && input) {
+    button.addEventListener("click", () => {
+      if (!input.value.trim()) return;
+      alert("This will connect to your AI later 👀");
+      input.value = "";
+    });
+  }
+});
+</script>
+
+<header id="header">
+  <div class="nav">
+    <!-- BRAND SECTION -->
+    <a href="#" class="nav-brand">
+      <div class="brand-icon">D</div>
+      <div class="brand-name">DhanitAI</div>
+    </a>
+
+    <!-- RIGHT SECTION - AUTH BUTTONS -->
+    <div class="nav-right">
+      <button class="nav-login">Login</button>
+      <button class="nav-signup">Sign Up</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-wrapper">
+    <div class="hero-content">
+      <h1>Loans don't have to feel confusing.</h1>
+      <p>Let Dhanit—your AI assistant—explain, check, and guide you to the right loan, without any of the usual confusion.</p>
+      <a class="btn-primary" href="#">Let's Get Started</a>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-icons">
+        <div class="float-icon">
+          <svg class="icon-chat" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="12" width="48" height="36" rx="8" fill="#e8d5f2" stroke="#c9a8d8" stroke-width="1.5"/>
+            <line x1="16" y1="22" x2="48" y2="22" stroke="#c9a8d8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="16" y1="30" x2="40" y2="30" stroke="#c9a8d8" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="16,48 12,56 24,48" fill="#e8d5f2" stroke="#c9a8d8" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="float-icon">
+          <svg class="icon-clipboard" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="12" width="36" height="44" rx="4" fill="#f5d9b8" stroke="#e8b88a" stroke-width="1.5"/>
+            <rect x="24" y="8" width="16" height="8" rx="2" fill="#e8b88a"/>
+            <line x1="20" y1="26" x2="44" y2="26" stroke="#e8b88a" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="34" x2="44" y2="34" stroke="#e8b88a" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="42" x2="36" y2="42" stroke="#e8b88a" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="float-icon">
+          <svg class="icon-check" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" fill="#a8d5a8" stroke="#6db86d" stroke-width="1.5"/>
+            <polyline points="20,32 28,40 44,24" stroke="#6db86d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="float-icon">
+          <svg class="icon-document" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect x="14" y="12" width="36" height="44" rx="4" fill="#e8d5f2" stroke="#c9a8d8" stroke-width="1.5"/>
+            <line x1="20" y1="24" x2="44" y2="24" stroke="#c9a8d8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="32" x2="44" y2="32" stroke="#c9a8d8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="40" x2="36" y2="40" stroke="#c9a8d8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ai-robot">
+        <div class="robot-glow"></div>
+        <div class="robot-container">
+          <div class="robot-head">
+            <div class="robot-eyes">
+              <div class="eye"></div>
+              <div class="eye"></div>
+            </div>
+            <div class="robot-smile"></div>
+          </div>
+          <div class="robot-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why">
+  <div class="why-wrapper">
+    <div class="why-left">
+      <div class="chat-mockup">
+        <div class="chat-header">
+          <span class="dot"></span>
+          <span class="title">Dhanit AI</span>
+        </div>
+        <div class="chat-body">
+          <div class="chat user">Am I eligible for a home loan?</div>
+          <div class="chat ai">
+            <div class="ai-title">AI found the requirements</div>
+            <ul>
+              <li>✔ Minimum salary: ₹30,000+</li>
+              <li>✔ Credit score: 700+</li>
+              <li>✔ Stable income history</li>
+            </ul>
+            <div class="ai-note">Click below to check eligibility</div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Type your question..." />
+          <button>➤</button>
+        </div>
+      </div>
+    </div>
+    <div class="why-right">
+      <h2>Why Dhanit Exists</h2>
+      <p>Most loans are rejected because people don't understand the process. Dhanit was built to explain—step by step, without judgment.</p>
+      
+      <div class="why-features">
+        <div class="feature-item">
+          <div class="feature-icon green">✓</div>
+          <div class="feature-text">
+            <h3>Explain every step clearly</h3>
+            <p>No hidden requirements or confusing jargon</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon pink">✕</div>
+          <div class="feature-text">
+            <h3>No confusing rules</h3>
+            <p>Everything is transparent and straightforward</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon yellow">⚙</div>
+          <div class="feature-text">
+            <h3>AI checks instead of agents</h3>
+            <p>Fast, fair, and always available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Meet Dhanit Section -->
+<section class="meet-dhanit">
+  <div class="meet-dhanit-wrapper">
+    <div class="section-header">
+      <h2>Meet Dhanit: Your Personal Loan Assistant</h2>
+      <p>Ask anything. Your AI checks, explains, and guides you through the loan process.</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-card-icon blue">💬</div>
+        <h3>Check Eligibility</h3>
+        <p>Find out if you qualify for a loan in seconds.</p>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-icon purple">🔍</div>
+        <h3>Dhanit Checks</h3>
+        <p>Dhanit analyzes your situ and eligibility in seconds.</p>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-icon teal">📋</div>
+        <h3>Business Loan</h3>
+        <p>Upload the right documents easily and track your application.</p>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI-Powered Loan Schemes Section -->
+<section class="loan-schemes">
+  <div class="loan-schemes-wrapper">
+    <div class="section-header">
+      <h2>AI-Powered Loan Schemes</h2>
+    </div>
+    
+    <div class="loan-grid">
+      <div class="loan-card">
+        <h3>Personal Loan</h3>
+        <div class="loan-requirements">
+          <div class="requirement">Salary: ₹20k +</div>
+          <div class="requirement">Credit score: 850+</div>
+        </div>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+      
+      <div class="loan-card">
+        <h3>Home Loan</h3>
+        <div class="loan-requirements">
+          <div class="requirement">Salary: ₹50k +</div>
+          <div class="requirement">Credit score: 700+</div>
+        </div>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+      
+      <div class="loan-card">
+        <h3>Business Loan</h3>
+        <div class="loan-requirements">
+          <div class="requirement">Business: 1 year+</div>
+          <div class="requirement">Annual: ₹10L +</div>
+        </div>
+        <a class="btn-primary" href="#">Check Eligibility with AI →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</section>
+
+<footer>
+  <div class="footer-wrapper">
+    <div class="footer-cta">
+      <h2>Ready to get started?</h2>
+      <p>Join thousands of users who've simplified their loan journey with Dhanit. Get instant eligibility checks and expert guidance.</p>
+      <a class="btn-primary" href="#">Start Your Journey Today →</a>
+    </div>
+    
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Product</h3>
+        <ul class="footer-links">
+          <li><a href="#">How It Works</a></li>
+          <li><a href="#">Loan Types</a></li>
+          <li><a href="#">Eligibility</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Company</h3>
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Legal</h3>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Compliance</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Connect</h3>
+        <ul class="footer-links">
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024 Dhanit - Powered by Tata. All rights reserved. | Built for first-time loan applicants • AI-guided • Privacy-safe</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

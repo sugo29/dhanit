@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Applications - DhanitAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-page: #f0f4f8;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --sidebar-width: 64px;
+            --sidebar-expanded: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sidebar {
+            width: var(--sidebar-expanded);
+            background: #1e3a8a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 24px 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: width 0.25s ease-in-out;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-width);
+            align-items: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 32px;
+            padding: 0 20px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            gap: 12px;
+        }
+
+        .sidebar.collapsed .logo {
+            justify-content: center;
+            padding: 0;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            margin-left: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .toggle-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            margin-left: 0;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .nav-items {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 16px 20px 8px;
+            opacity: 1;
+            transition: opacity 0.2s;
+            width: 100%;
+            display: block;
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 0;
+            border-radius: 0;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 14px;
+            justify-content: center;
+            width: auto;
+            min-width: 64px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left: none;
+            padding-left: 20px;
+        }
+
+        .sidebar.collapsed .nav-item.active {
+            padding-left: 14px;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        .nav-label {
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .nav-label {
+            display: none;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transition: margin-left 0.25s ease-in-out;
+        }
+
+        .top-nav {
+            height: 64px;
+            background-color: transparent;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 32px;
+            flex-shrink: 0;
+            box-shadow: none;
+            position: relative;
+            z-index: 3;
+            gap: 20px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .page-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: transparent;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header {
+            margin-bottom: 8px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .applications-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        td {
+            padding: 14px 12px;
+            font-size: 13px;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .applications-table {
+                overflow-x: auto;
+            }
+        }
+
+        /* CONTROL ROW STYLES */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 10px 36px 10px 14px;
+            font-size: 13px;
+            font-family: inherit;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-primary);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .filter-select:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 36px 10px 40px;
+            font-size: 13px;
+            font-family: inherit;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:hover {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            display: none;
+            transition: color 0.2s;
+        }
+
+        .search-clear:hover {
+            color: var(--text-primary);
+        }
+
+        .search-clear.visible {
+            display: block;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .no-results-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        tr.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">Dhanit</div>
+            <button class="toggle-btn" id="toggleBtn" title="Collapse sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="nav-items">
+            <div class="nav-section-title">My Loan</div>
+            <a href="dashboard.html" class="nav-item" title="Dashboard">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="loan-applications.html" class="nav-item active" title="Loan Applications">
+                <div class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span class="nav-label">Loan Applications</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Process</div>
+            <a href="chatbot.html" class="nav-item" title="Chatbot">
+                <div class="nav-icon"><i class="fas fa-robot"></i></div>
+                <span class="nav-label">Chatbot</span>
+            </a>
+            <a href="verification.html" class="nav-item" title="Verification">
+                <div class="nav-icon"><i class="fas fa-search"></i></div>
+                <span class="nav-label">Verification</span>
+            </a>
+            <a href="underwriting.html" class="nav-item" title="Underwriting">
+                <div class="nav-icon"><i class="fas fa-calculator"></i></div>
+                <span class="nav-label">Underwriting</span>
+            </a>
+            <a href="sanctions.html" class="nav-item" title="Sanctions">
+                <div class="nav-icon"><i class="fas fa-stamp"></i></div>
+                <span class="nav-label">Sanctions</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Insights</div>
+            <a href="analytics.html" class="nav-item" title="Insights & Analytics">
+                <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                <span class="nav-label">Insights & Analytics</span>
+            </a>
+            <a href="settings.html" class="nav-item" title="Settings">
+                <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                <span class="nav-label">Settings</span>
+            </a>
+        </div>
+
+        <!-- USER PROFILE SECTION AT BOTTOM -->
+        <div class="user-section">
+            <div class="user-profile-bottom">
+                <div class="user-avatar-bottom" id="userAvatarBottom">SR</div>
+                <div class="user-info-bottom">
+                    <div class="user-name-bottom" id="userNameBottom">Sarah Rodriguez</div>
+                    <div class="user-email-bottom" id="userEmailBottom">sarah@email.com</div>
+                </div>
+            </div>
+            <button class="logout-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-nav">
+            <div style="flex: 1;">
+                <h1 class="page-title" style="margin: 0; font-size: 18px;">Loan Applications</h1>
+            </div>
+            <div class="nav-right">
+                <button class="nav-icon-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="nav-divider"></div>
+                <div class="user-profile">
+                    <div class="user-avatar">SR</div>
+                    <div class="user-name">Sarah Rodriguez</div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                </div>
+                <button class="nav-icon-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Loan Applications</h1>
+                <p class="page-subtitle">View and manage all your loan applications</p>
+            </div>
+
+            <div class="applications-table">
+                <!-- CONTROL ROW -->
+                <div class="controls-row">
+                    <div class="filter-group">
+                        <span class="filter-label">Filter by Status</span>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="searchInput"
+                            placeholder="Search by Application ID, loan type, or status">
+                        <button class="search-clear" id="searchClear" title="Clear search">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <table id="applicationsTable">
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Loan Amount</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Applied Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CS-7894-2023</td>
+                            <td>₹85,000</td>
+                            <td>Personal Loan</td>
+                            <td><span class="status-badge status-active">Active</span></td>
+                            <td>Jan 15, 2024</td>
+                            <td><button class="btn btn-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>CS-7893-2023</td>
+                            <td>₹50,000</td>
+                            <td>Business Loan</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>Dec 20, 2023</td>
+                            <td><button class="btn btn-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>CS-7892-2023</td>
+                            <td>₹120,000</td>
+                            <td>Home Loan</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>Nov 10, 2023</td>
+                            <td><button class="btn btn-primary">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="no-results" id="noResults" style="display: none;">
+                    <div class="no-results-icon"><i class="fas fa-search"></i></div>
+                    <p>No loan applications match your search.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        const sidebarState = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarState) {
+            sidebar.classList.add('collapsed');
+            updateToggleButton();
+        }
+
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+            updateToggleButton();
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        });
+
+        function updateToggleButton() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            if (isCollapsed) {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                toggleBtn.title = 'Expand sidebar';
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                toggleBtn.title = 'Collapse sidebar';
+            }
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function (e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // FILTER AND SEARCH FUNCTIONALITY
+        const statusFilter = document.getElementById('statusFilter');
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+        const table = document.getElementById('applicationsTable');
+        const noResults = document.getElementById('noResults');
+        const tableBody = table.querySelector('tbody');
+        const rows = tableBody.querySelectorAll('tr');
+
+        function filterTable() {
+            const filterValue = statusFilter.value.toLowerCase();
+            const searchValue = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const appId = row.cells[0].textContent.toLowerCase();
+                const loanType = row.cells[2].textContent.toLowerCase();
+                const statusCell = row.cells[3];
+                const statusText = statusCell.textContent.toLowerCase().trim();
+
+                // Check status filter
+                let passesFilter = filterValue === 'all' || statusText === filterValue;
+
+                // Check search
+                let passesSearch = searchValue === '' ||
+                    appId.includes(searchValue) ||
+                    loanType.includes(searchValue) ||
+                    statusText.includes(searchValue);
+
+                if (passesFilter && passesSearch) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+                table.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                table.style.display = 'table';
+            }
+        }
+
+        // Event listeners
+        statusFilter.addEventListener('change', filterTable);
+
+        searchInput.addEventListener('input', function () {
+            filterTable();
+            // Show/hide clear button
+            if (this.value.length > 0) {
+                searchClear.classList.add('visible');
+            } else {
+                searchClear.classList.remove('visible');
+            }
+        });
+
+        searchClear.addEventListener('click', function () {
+            searchInput.value = '';
+            searchClear.classList.remove('visible');
+            filterTable();
+            searchInput.focus();
+        });
+    </script>
+</body>
+
+</html>

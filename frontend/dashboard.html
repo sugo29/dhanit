@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhanit - My Loan Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-page: #f0f4f8;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --sidebar-width: 64px;
+            --sidebar-expanded: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-expanded);
+            background: #1e3a8a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 24px 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: width 0.25s ease-in-out;
+            height: 100vh;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-width);
+            align-items: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 32px;
+            padding: 0 20px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            gap: 12px;
+        }
+
+        .sidebar.collapsed .logo {
+            justify-content: center;
+            padding: 0;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            margin-left: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .toggle-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            margin-left: 0;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .sidebar:hover .logo-text {
+            opacity: 1;
+        }
+
+        .nav-items {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 16px 20px 8px;
+            opacity: 1;
+            transition: opacity 0.2s;
+            width: 100%;
+            display: block;
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 0;
+            border-radius: 0;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 14px;
+            justify-content: center;
+            width: auto;
+            min-width: 64px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left: none;
+            padding-left: 20px;
+        }
+
+        .sidebar.collapsed .nav-item.active {
+            padding-left: 14px;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        .nav-label {
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .nav-label {
+            display: none;
+        }
+
+        /* Tooltip for collapsed state */
+        .nav-item[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 64px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* TOP NAV */
+        .top-nav {
+            height: 64px;
+            background-color: transparent;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 32px;
+            flex-shrink: 0;
+            box-shadow: none;
+            position: relative;
+            z-index: 3;
+            gap: 20px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        /* USER PROFILE SECTION AT BOTTOM */
+        .user-section {
+            width: 100%;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            box-sizing: border-box;
+        }
+
+        .sidebar.collapsed .user-section {
+            padding: 16px 12px;
+            justify-content: center;
+        }
+
+        .user-profile-bottom {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar.collapsed .user-profile-bottom {
+            flex: 0;
+            gap: 0;
+        }
+
+        .user-avatar-bottom {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .user-info-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex: 1;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .user-info-bottom {
+            display: none !important;
+        }
+
+        .user-name-bottom {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .user-email-bottom {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .logout-btn {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .sidebar.collapsed .logout-btn {
+            display: none !important;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .logout-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transition: margin-left 0.25s ease-in-out;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            padding: 24px 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: transparent;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            margin-bottom: 8px;
+            display: none;
+            padding: 0 32px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* MAIN GRID - 2 COLUMNS */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 0 32px;
+        }
+
+        /* LOAN SNAPSHOT - FULL WIDTH */
+        .loan-snapshot {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .profile-avatar-large {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .profile-info h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 1px;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .badge.info {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .contact-info p {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.08);
+            margin: 8px 0;
+        }
+
+        .profile-additional {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .additional-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .additional-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        .additional-value {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* METRICS CARD */
+        .metrics-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metrics-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .metrics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metrics-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metrics-timestamp {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* METRICS GRID - 4 COLUMNS */
+        .metrics-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: capitalize;
+            letter-spacing: 0px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .metric-subtext {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .status-section {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .status-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .status-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .status-badge.in-progress {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .status-right-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+
+        .status-right-value {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* LOAN INSIGHTS SECTION */
+        .loan-insights {
+            grid-column: 1 / -1;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            border: none;
+        }
+
+        .insights-header {
+            margin-bottom: 24px;
+        }
+
+        .insights-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insights-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .insights-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* INSIGHTS GRID - 2x2 */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .insight-card-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .insight-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .insight-card-legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 11px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 220px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 20px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .chart-axes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chart-y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-right: 8px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .chart-x-axis {
+            position: absolute;
+            bottom: -20px;
+            left: 40px;
+            right: 0;
+            height: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .chart-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bar-stack {
+            width: 32px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.05);
+            min-height: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .bar-segment {
+            flex: 1;
+            transition: all 0.3s;
+            min-height: 4px;
+        }
+
+        .bar-segment:hover {
+            opacity: 0.8;
+            filter: brightness(1.1);
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* LINE CHART STYLES */
+        .line-chart-container {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px 40px 40px 40px;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        .line-chart-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 40px 40px 40px;
+            pointer-events: none;
+        }
+
+        .grid-line {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .line-chart-y-axis {
+            position: absolute;
+            left: 0;
+            top: 20px;
+            bottom: 40px;
+            width: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-right: 8px;
+            font-size: 10px;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        .line-chart-x-axis {
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            right: 0;
+            height: 35px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        .line-chart-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 0;
+            z-index: 2;
+        }
+
+        .line-point-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            height: 100%;
+        }
+
+        .line-points {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .line-point {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: absolute;
+            z-index: 3;
+        }
+
+        .line-point:hover {
+            transform: scale(1.5);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .line-point.income {
+            background: #93c5fd;
+        }
+
+        .line-point.emi {
+            background: #a78bfa;
+        }
+
+        .line-point.safe {
+            background: #86efac;
+        }
+
+        .line-chart-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .line-chart-legend {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-line-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .axis-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            position: absolute;
+        }
+
+        .y-axis-label {
+            left: -35px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: center;
+        }
+
+        .x-axis-label {
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .confidence-badge {
+            background: linear-gradient(135deg, var(--success) 0%, #34d399 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
+        .insight-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .stability-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stability-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stability-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stability-value {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .stability-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stability-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .stability-insight {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* LOAN JOURNEY - FULL WIDTH */
+        .loan-journey {
+            grid-column: 1 / -1;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            border: none;
+            margin: 0 -32px;
+            padding: 24px 32px;
+            width: calc(100% + 64px);
+        }
+
+        .journey-timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 40px 40px;
+            width: 100%;
+        }
+
+        .journey-line {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border);
+            z-index: 1;
+        }
+
+        .journey-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-dot {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--border);
+            border: 4px solid var(--bg-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .journey-step.completed .step-dot {
+            background: var(--success);
+            color: white;
+            border-color: var(--bg-white);
+        }
+
+        .journey-step.active .step-dot {
+            background: var(--primary);
+            color: white;
+            border-color: var(--bg-white);
+            box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+        }
+
+        .step-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .step-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* AI INSIGHTS - LEFT */
+        .ai-insights {
+            grid-column: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .insight-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-icon {
+            font-size: 18px;
+        }
+
+        .insight-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .confidence-bar {
+            margin-top: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            background: var(--success);
+            height: 100%;
+            width: 94%;
+            border-radius: 2px;
+        }
+
+        /* CONVERSATIONS - RIGHT */
+        .conversations {
+            grid-column: 2;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-left: 3px solid transparent;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .conversation-item:hover {
+            background: rgba(255, 255, 255, 0.6);
+            border-left-color: var(--primary);
+        }
+
+        .conversation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .conversation-icon.sales {
+            background: rgba(37, 99, 235, 0.25);
+            color: var(--primary);
+        }
+
+        .conversation-icon.verification {
+            background: rgba(245, 158, 11, 0.25);
+            color: var(--warning);
+        }
+
+        .conversation-icon.success {
+            background: rgba(16, 185, 129, 0.25);
+            color: var(--success);
+        }
+
+        .conversation-content {
+            flex: 1;
+        }
+
+        .conversation-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .conversation-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* FINANCIAL & RISK INSIGHTS - RIGHT */
+        .financial-insights {
+            grid-column: 2;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .financial-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .financial-percentage {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .financial-percentage-label {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .financial-header-text h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .financial-header-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .financial-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .financial-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .financial-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateX(4px);
+        }
+
+        .financial-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .financial-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .financial-item-icon.credit {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .financial-item-icon.document {
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+
+        .financial-item-icon.explore {
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+
+        .financial-item-content h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .financial-item-content p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .financial-item-arrow {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        /* ACTIONS - FULL WIDTH CONTAINER */
+        .actions-section {
+            grid-column: 1 / -1;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            backdrop-filter: none;
+            border: none;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .actions-section .section-title {
+            grid-column: 1 / -1;
+            background: transparent;
+            box-shadow: none;
+            border: none;
+            backdrop-filter: none;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        /* ACTION BOX WRAPPER */
+        .action-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .action-box .section-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px;
+            border-left: 3px solid transparent;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .action-item.required {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .action-item.recommended {
+            border-left-color: var(--primary);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .action-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-icon {
+            font-size: 18px;
+            width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .action-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-insights,
+            .conversations {
+                grid-column: 1;
+            }
+
+            .metrics-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-width);
+            }
+
+            .dashboard-content {
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .loan-snapshot {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">Dhanit</div>
+            <button class="toggle-btn" id="toggleBtn" title="Collapse sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="nav-items">
+            <div class="nav-section-title">My Loan</div>
+            <a href="dashboard.html" class="nav-item active" title="Dashboard">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="loan-applications.html" class="nav-item" title="Loan Applications">
+                <div class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span class="nav-label">Loan Applications</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Process</div>
+            <a href="chatbot.html" class="nav-item" title="Chatbot">
+                <div class="nav-icon"><i class="fas fa-robot"></i></div>
+                <span class="nav-label">Chatbot</span>
+            </a>
+            <a href="verification.html" class="nav-item" title="Verification">
+                <div class="nav-icon"><i class="fas fa-search"></i></div>
+                <span class="nav-label">Verification</span>
+            </a>
+            <a href="underwriting.html" class="nav-item" title="Underwriting">
+                <div class="nav-icon"><i class="fas fa-calculator"></i></div>
+                <span class="nav-label">Underwriting</span>
+            </a>
+            <a href="sanctions.html" class="nav-item" title="Sanctions">
+                <div class="nav-icon"><i class="fas fa-stamp"></i></div>
+                <span class="nav-label">Sanctions</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Insights</div>
+            <a href="analytics.html" class="nav-item" title="Insights & Analytics">
+                <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                <span class="nav-label">Insights & Analytics</span>
+            </a>
+            <a href="settings.html" class="nav-item" title="Settings">
+                <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                <span class="nav-label">Settings</span>
+            </a>
+        </div>
+
+        <!-- USER PROFILE SECTION AT BOTTOM -->
+        <div class="user-section">
+            <div class="user-profile-bottom">
+                <div class="user-avatar-bottom" id="userAvatarBottom">SR</div>
+                <div class="user-info-bottom">
+                    <div class="user-name-bottom" id="userNameBottom">Sarah Rodriguez</div>
+                    <div class="user-email-bottom" id="userEmailBottom">sarah@email.com</div>
+                </div>
+            </div>
+            <button class="logout-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP NAV -->
+        <div class="top-nav">
+            <div style="flex: 1;">
+                <h1 class="page-title" style="margin: 0; font-size: 18px;">My Loan Dashboard</h1>
+            </div>
+            <div class="nav-right">
+                <button class="nav-icon-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="nav-divider"></div>
+                <div class="user-profile">
+                    <div class="user-avatar">SR</div>
+                    <div class="user-name">Sarah Rodriguez</div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                </div>
+                <button class="nav-icon-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD CONTENT -->
+        <div class="dashboard-content">
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <h1 class="page-title">My Loan Dashboard</h1>
+                <p class="page-subtitle">Track your loan progress, documents, and next steps in one place</p>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="main-grid">
+                <!-- LOAN SNAPSHOT -->
+                <div class="loan-snapshot">
+                    <!-- PROFILE CARD -->
+                    <div class="profile-card">
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div class="profile-avatar-large">AR</div>
+                                <div class="profile-info">
+                                    <h3>Aarav Sharma</h3>
+                                    <p>Loan ID: CS-7894-2023</p>
+                                </div>
+                            </div>
+                            <div class="profile-badges">
+                                <div class="badge success">✓ Low Risk</div>
+                                <div class="badge info">✓ KYC Verified</div>
+                            </div>
+                            <div class="contact-info">
+                                <p>📞 +1 555-234-5678</p>
+                                <p>📧 aarav.sharma@email.com</p>
+                                <p>📍 New York, NY</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-divider"></div>
+
+                        <div class="profile-additional">
+                            <div class="additional-item">
+                                <div class="additional-label">Customer Since</div>
+                                <div class="additional-value">January 2022</div>
+                            </div>
+                            <div class="additional-item">
+                                <div class="additional-label">Total Loans</div>
+                                <div class="additional-value">1 Active Loan</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- METRICS CARD -->
+                    <div class="metrics-card">
+                        <div class="metrics-wrapper">
+                            <div class="metrics-header">
+                                <div class="metrics-title">Loan Snapshot</div>
+                                <div class="metrics-timestamp">Last updated: Today, 10:30 AM</div>
+                            </div>
+
+                            <div class="metrics-section">
+                                <div class="metric-card">
+                                    <div class="metric-label">Loan Amount</div>
+                                    <div class="metric-value">₹85,000</div>
+                                    <div class="metric-subtext">Sanctioned</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Monthly EMI</div>
+                                    <div class="metric-value">₹1,540</div>
+                                    <div class="metric-subtext">per month</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Interest Rate</div>
+                                    <div class="metric-value">8.9%</div>
+                                    <div class="metric-subtext">Fixed, 5 years</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Tenure</div>
+                                    <div class="metric-value">60 mo</div>
+                                    <div class="metric-subtext">5 years</div>
+                                </div>
+
+                                <div class="status-section">
+                                    <div class="status-left">
+                                        <div class="status-label">Current Status</div>
+                                        <span class="status-badge in-progress">In Progress</span>
+                                    </div>
+                                    <div class="status-right">
+                                        <div class="status-right-label">Last updated</div>
+                                        <div class="status-right-value">Today, 10:30 AM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOAN JOURNEY -->
+                <div class="loan-journey">
+                    <h2 class="section-title">Your Loan Journey</h2>
+                    <div class="journey-timeline">
+                        <div class="journey-line"></div>
+
+                        <div class="journey-step completed">
+                            <div class="step-dot">✓</div>
+                            <div class="step-label">Application</div>
+                            <div class="step-status">Completed</div>
+                        </div>
+
+                        <div class="journey-step completed">
+                            <div class="step-dot">✓</div>
+                            <div class="step-label">Verification</div>
+                            <div class="step-status">In Progress</div>
+                        </div>
+
+                        <div class="journey-step active">
+                            <div class="step-dot">◐</div>
+                            <div class="step-label">Underwriting</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+
+                        <div class="journey-step">
+                            <div class="step-dot">4</div>
+                            <div class="step-label">Sanction</div>
+                            <div class="step-status">Pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YOUR LOAN INSIGHTS -->
+                <div class="loan-insights">
+                    <div class="insights-header">
+                        <h2 class="insights-title">Your Loan Insights</h2>
+                        <p class="insights-subtitle">Personalized insights based on your documents, income, and
+                            interactions</p>
+                    </div>
+
+                    <div class="insights-grid">
+                        <!-- CARD 1: Documentation Completion -->
+                        <div class="insight-card-wrapper">
+                            <div class="insight-card-title">
+                                📋 Documentation Completion Status
+                                <div class="insight-card-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #10b981;"></div>
+                                        <span>Verified</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #3b82f6;"></div>
+                                        <span>Uploaded</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #f59e0b;"></div>
+                                        <span>Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="position: relative; padding: 20px 0 30px 40px;">
+                                <div class="chart-container">
+                                    <div class="chart-y-axis">
+                                        <span>100%</span>
+                                        <span>75%</span>
+                                        <span>50%</span>
+                                        <span>25%</span>
+                                        <span>0%</span>
+                                    </div>
+                                    <div
+                                        style="flex: 1; position: relative; display: flex; align-items: flex-end; justify-content: space-around; gap: 20px; padding-left: 20px;">
+                                        <div class="chart-bar">
+                                            <div class="bar-stack" style="height: 120px; background: #10b981;"></div>
+                                            <div class="bar-label">Salary Slip</div>
+                                        </div>
+                                        <div class="chart-bar">
+                                            <div class="bar-stack" style="height: 100px; background: #f59e0b;"></div>
+                                            <div class="bar-label">Bank Statement</div>
+                                        </div>
+                                        <div class="chart-bar">
+                                            <div class="bar-stack" style="height: 140px; background: #10b981;"></div>
+                                            <div class="bar-label">ID Proof</div>
+                                        </div>
+                                        <div class="chart-bar">
+                                            <div class="bar-stack" style="height: 110px; background: #3b82f6;"></div>
+                                            <div class="bar-label">Address Proof</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Axis Labels -->
+                                <div
+                                    style="position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-muted); font-weight: 600;">
+                                    Documents</div>
+                                <div
+                                    style="position: absolute; left: -35px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap;">
+                                    Completion %</div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: EMI vs Income -->
+                        <div class="insight-card-wrapper">
+                            <div class="insight-card-title">
+                                💰 EMI vs Income vs Safe Budget
+                                <div class="insight-card-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #93c5fd;"></div>
+                                        <span>Income</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #a78bfa;"></div>
+                                        <span>EMI</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: #86efac;"></div>
+                                        <span>Safe</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="position: relative; height: 200px; margin: 20px 0 40px 40px;">
+                                <svg width="100%" height="100%" viewBox="0 0 400 180"
+                                    preserveAspectRatio="xMidYMid meet" style="overflow: visible;">
+                                    <!-- Grid lines -->
+                                    <line x1="30" y1="30" x2="380" y2="30" stroke="rgba(0,0,0,0.05)" stroke-width="1" />
+                                    <line x1="30" y1="65" x2="380" y2="65" stroke="rgba(0,0,0,0.05)" stroke-width="1" />
+                                    <line x1="30" y1="100" x2="380" y2="100" stroke="rgba(0,0,0,0.05)"
+                                        stroke-width="1" />
+                                    <line x1="30" y1="135" x2="380" y2="135" stroke="rgba(0,0,0,0.05)"
+                                        stroke-width="1" />
+
+                                    <!-- Y-axis labels -->
+                                    <text x="15" y="35" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">₹100K</text>
+                                    <text x="15" y="70" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">₹75K</text>
+                                    <text x="15" y="105" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">₹50K</text>
+                                    <text x="15" y="140" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">₹25K</text>
+
+                                    <!-- Income line (Light Blue) - flat at top -->
+                                    <polyline points="50,30 150,30 250,30 350,30" stroke="#93c5fd" stroke-width="3"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+                                    <!-- Safe EMI line (Green) - middle -->
+                                    <polyline points="50,75 150,72 250,70 350,68" stroke="#86efac" stroke-width="3"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+                                    <!-- EMI line (Purple) - lower -->
+                                    <polyline points="50,110 150,108 250,105 350,102" stroke="#a78bfa" stroke-width="3"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+                                    <!-- Data points for Income -->
+                                    <circle cx="50" cy="30" r="4" fill="#93c5fd" stroke="white" stroke-width="2" />
+                                    <circle cx="150" cy="30" r="4" fill="#93c5fd" stroke="white" stroke-width="2" />
+                                    <circle cx="250" cy="30" r="4" fill="#93c5fd" stroke="white" stroke-width="2" />
+                                    <circle cx="350" cy="30" r="4" fill="#93c5fd" stroke="white" stroke-width="2" />
+
+                                    <!-- Data points for Safe EMI -->
+                                    <circle cx="50" cy="75" r="4" fill="#86efac" stroke="white" stroke-width="2" />
+                                    <circle cx="150" cy="72" r="4" fill="#86efac" stroke="white" stroke-width="2" />
+                                    <circle cx="250" cy="70" r="4" fill="#86efac" stroke="white" stroke-width="2" />
+                                    <circle cx="350" cy="68" r="4" fill="#86efac" stroke="white" stroke-width="2" />
+
+                                    <!-- Data points for EMI -->
+                                    <circle cx="50" cy="110" r="4" fill="#a78bfa" stroke="white" stroke-width="2" />
+                                    <circle cx="150" cy="108" r="4" fill="#a78bfa" stroke="white" stroke-width="2" />
+                                    <circle cx="250" cy="105" r="4" fill="#a78bfa" stroke="white" stroke-width="2" />
+                                    <circle cx="350" cy="102" r="5" fill="#a78bfa" stroke="white" stroke-width="2.5" />
+
+                                    <!-- X-axis labels (only at bottom) -->
+                                    <text x="50" y="160" font-size="11" fill="rgba(0,0,0,0.5)" text-anchor="middle"
+                                        font-weight="500">M1</text>
+                                    <text x="150" y="160" font-size="11" fill="rgba(0,0,0,0.5)" text-anchor="middle"
+                                        font-weight="500">M2</text>
+                                    <text x="250" y="160" font-size="11" fill="rgba(0,0,0,0.5)" text-anchor="middle"
+                                        font-weight="500">M3</text>
+                                    <text x="350" y="160" font-size="11" fill="rgba(0,0,0,0.5)" text-anchor="middle"
+                                        font-weight="500">M4</text>
+                                </svg>
+
+                                <!-- Axis Labels -->
+                                <div
+                                    style="position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-muted); font-weight: 600;">
+                                    Time Period</div>
+                                <div
+                                    style="position: absolute; left: -40px; top: 50%; transform: translateY(-50%) rotate(-90deg); transform-origin: center; font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap;">
+                                    Amount (₹)</div>
+                            </div>
+                            <div class="insight-text">
+                                <strong>Your EMI is 28% of your income (within safe range)</strong>
+                                <div style="margin-top: 8px; color: var(--success);">✓ Your repayment capacity is strong
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 3: Risk Confidence Over Time -->
+                        <div class="insight-card-wrapper">
+                            <div class="insight-card-title">
+                                📈 Risk Confidence Over Time
+                            </div>
+                            <div style="position: relative; height: 200px; margin: 20px 0;">
+                                <svg width="100%" height="100%" viewBox="0 0 400 180"
+                                    preserveAspectRatio="xMidYMid meet" style="overflow: visible;">
+                                    <defs>
+                                        <linearGradient id="confidenceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
+                                            <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.05" />
+                                        </linearGradient>
+                                        <filter id="glow">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+
+                                    <!-- Grid lines -->
+                                    <line x1="30" y1="30" x2="380" y2="30" stroke="rgba(0,0,0,0.05)" stroke-width="1" />
+                                    <line x1="30" y1="65" x2="380" y2="65" stroke="rgba(0,0,0,0.05)" stroke-width="1" />
+                                    <line x1="30" y1="100" x2="380" y2="100" stroke="rgba(0,0,0,0.05)"
+                                        stroke-width="1" />
+                                    <line x1="30" y1="135" x2="380" y2="135" stroke="rgba(0,0,0,0.05)"
+                                        stroke-width="1" />
+
+                                    <!-- Y-axis labels -->
+                                    <text x="15" y="35" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">100%</text>
+                                    <text x="15" y="70" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">75%</text>
+                                    <text x="15" y="105" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">50%</text>
+                                    <text x="15" y="140" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="end">25%</text>
+
+                                    <!-- Gradient fill area under curve -->
+                                    <polygon
+                                        points="50,120 100,95 150,80 200,65 250,50 300,35 350,25 350,160 300,160 250,160 200,160 150,160 100,160 50,160"
+                                        fill="url(#confidenceGradient)" />
+
+                                    <!-- Main line -->
+                                    <polyline points="50,120 100,95 150,80 200,65 250,50 300,35 350,25" stroke="#10b981"
+                                        stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                        filter="url(#glow)" />
+
+                                    <!-- Data points -->
+                                    <circle cx="50" cy="120" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="100" cy="95" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="150" cy="80" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="200" cy="65" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="250" cy="50" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="300" cy="35" r="5" fill="#10b981" stroke="white" stroke-width="2" />
+                                    <circle cx="350" cy="25" r="6" fill="#10b981" stroke="white" stroke-width="2.5" />
+
+                                    <!-- X-axis labels -->
+                                    <text x="50" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D1</text>
+                                    <text x="100" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D3</text>
+                                    <text x="150" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D5</text>
+                                    <text x="200" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D7</text>
+                                    <text x="250" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D10</text>
+                                    <text x="300" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">D14</text>
+                                    <text x="350" y="160" font-size="10" fill="rgba(0,0,0,0.4)"
+                                        text-anchor="middle">Today</text>
+
+                                    <!-- Tooltip for latest point -->
+                                    <g>
+                                        <rect x="330" y="5" width="60" height="20" rx="4" fill="#10b981"
+                                            opacity="0.9" />
+                                        <text x="360" y="18" font-size="12" font-weight="bold" fill="white"
+                                            text-anchor="middle">94%</text>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="confidence-badge">Current Confidence: 94%</div>
+                            <div class="insight-text">Your confidence score has improved steadily as documents were
+                                verified and interactions increased.</div>
+                        </div>
+
+                        <!-- CARD 4: Financial Stability Snapshot -->
+                        <div class="insight-card-wrapper">
+                            <div class="insight-card-title">
+                                🛡️ Your Financial Stability Snapshot
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; justify-content: center; gap: 24px; padding: 20px 0;">
+                                <!-- Pie Chart SVG -->
+                                <svg width="140" height="140" viewBox="0 0 140 140" style="flex-shrink: 0;">
+                                    <!-- EMI Load (28%) - Green -->
+                                    <circle cx="70" cy="70" r="50" fill="none" stroke="#10b981" stroke-width="12"
+                                        stroke-dasharray="43.96 157.08" stroke-dashoffset="0"
+                                        transform="rotate(-90 70 70)" />
+
+                                    <!-- Income Stability (85%) - Light Green -->
+                                    <circle cx="70" cy="70" r="50" fill="none" stroke="#34d399" stroke-width="12"
+                                        stroke-dasharray="133.38 157.08" stroke-dashoffset="-43.96"
+                                        transform="rotate(-90 70 70)" />
+
+                                    <!-- Repayment Capacity (90%) - Teal -->
+                                    <circle cx="70" cy="70" r="50" fill="none" stroke="#06b6d4" stroke-width="12"
+                                        stroke-dasharray="141.37 157.08" stroke-dashoffset="-177.34"
+                                        transform="rotate(-90 70 70)" />
+
+                                    <!-- Risk Level (15%) - Blue -->
+                                    <circle cx="70" cy="70" r="50" fill="none" stroke="#3b82f6" stroke-width="12"
+                                        stroke-dasharray="23.56 157.08" stroke-dashoffset="-318.71"
+                                        transform="rotate(-90 70 70)" />
+
+                                    <!-- Center circle for donut effect -->
+                                    <circle cx="70" cy="70" r="32" fill="rgba(255, 255, 255, 0.1)" />
+                                    <text x="70" y="75" text-anchor="middle" font-size="20" font-weight="bold"
+                                        fill="var(--text-primary)">Strong</text>
+                                </svg>
+
+                                <!-- Legend -->
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                        <div
+                                            style="width: 12px; height: 12px; border-radius: 2px; background: #10b981;">
+                                        </div>
+                                        <span>EMI Load: 28%</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                        <div
+                                            style="width: 12px; height: 12px; border-radius: 2px; background: #34d399;">
+                                        </div>
+                                        <span>Income: 85%</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                        <div
+                                            style="width: 12px; height: 12px; border-radius: 2px; background: #06b6d4;">
+                                        </div>
+                                        <span>Repayment: 90%</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                        <div
+                                            style="width: 12px; height: 12px; border-radius: 2px; background: #3b82f6;">
+                                        </div>
+                                        <span>Risk: 15%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stability-insight">
+                                ✓ Based on your current profile, your repayment capacity is strong and risk level is
+                                low.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI INSIGHTS -->
+                <div class="ai-insights">
+                    <h2 class="section-title">Your Recent Interaction Summary</h2>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <div class="insight-title">
+                                <span class="insight-icon">💬</span>
+                                Your Question
+                            </div>
+                            <div class="insight-text">You asked about loan approval timeline and interest calculation.
+                            </div>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-title">
+                                <span class="insight-icon">😌</span>
+                                Your Emotion
+                            </div>
+                            <div class="insight-text">You seemed calm but slightly concerned about repayment
+                                flexibility.</div>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-title">
+                                <span class="insight-icon">📊</span>
+                                AI Understanding
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill"></div>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">94% confidence
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONVERSATIONS -->
+                <div class="conversations">
+                    <h2 class="section-title">Your Past Conversations</h2>
+
+                    <div class="conversation-item">
+                        <div class="conversation-icon sales">🟦</div>
+                        <div class="conversation-content">
+                            <div class="conversation-title">748</div>
+                            <div class="conversation-time">Good • Inspection</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item">
+                        <div class="conversation-icon verification">🟨</div>
+                        <div class="conversation-content">
+                            <div class="conversation-title">₹1,540</div>
+                            <div class="conversation-time">Share 28% of your monthly income</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item">
+                        <div class="conversation-icon success">�</div>
+                        <div class="conversation-content">
+                            <div class="conversation-title">28%</div>
+                            <div class="conversation-time">Within safe limits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="actions-section">
+                    <h2 class="section-title">Actions & Next Steps</h2>
+
+                    <div class="action-box">
+                        <h3
+                            style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <span
+                                style="width: 4px; height: 16px; background: var(--primary); border-radius: 2px;"></span>What
+                            You Should Do Next</h3>
+
+                        <div class="action-item required">
+                            <div class="action-icon">📄</div>
+                            <div class="action-content">
+                                <div class="action-label">Upload Salary Slip</div>
+                                <div class="action-desc">Required to proceed to disbursement</div>
+                            </div>
+                            <button class="action-btn">Required</button>
+                        </div>
+
+                        <div class="action-item required">
+                            <div class="action-icon">✓</div>
+                            <div class="action-content">
+                                <div class="action-label">Verify Employment</div>
+                                <div class="action-desc">Receive required for final loan approval</div>
+                            </div>
+                            <button class="action-btn">Verify</button>
+                        </div>
+
+                        <div class="action-item required">
+                            <div class="action-icon">📋</div>
+                            <div class="action-content">
+                                <div class="action-label">Receive Sanction Letter</div>
+                                <div class="action-desc">Explore Loan Agent</div>
+                            </div>
+                            <button class="action-btn">Send</button>
+                        </div>
+                    </div>
+
+                    <div class="action-box">
+                        <h3
+                            style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <span
+                                style="width: 4px; height: 16px; background: var(--primary); border-radius: 2px;"></span>Recommended
+                            Next Steps</h3>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">💰</div>
+                            <div class="action-content">
+                                <div class="action-label">Review Loan Terms</div>
+                                <div class="action-desc">Understand EMI and repayment schedule</div>
+                            </div>
+                            <button class="action-btn">Review</button>
+                        </div>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">📞</div>
+                            <div class="action-content">
+                                <div class="action-label">Schedule Call with Agent</div>
+                                <div class="action-desc">Discuss any concerns or questions</div>
+                            </div>
+                            <button class="action-btn">Schedule</button>
+                        </div>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">✅</div>
+                            <div class="action-content">
+                                <div class="action-label">Accept Loan Offer</div>
+                                <div class="action-desc">Finalize and proceed to disbursement</div>
+                            </div>
+                            <button class="action-btn">Accept</button>
+                        </div>
+                    </div>
+
+                    <div class="action-box">
+                        <h3
+                            style="font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <span
+                                style="width: 4px; height: 16px; background: var(--primary); border-radius: 2px;"></span>Quick
+                            Links</h3>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">📚</div>
+                            <div class="action-content">
+                                <div class="action-label">View Documentation</div>
+                                <div class="action-desc">Access loan guides and FAQs</div>
+                            </div>
+                            <button class="action-btn">View</button>
+                        </div>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">💬</div>
+                            <div class="action-content">
+                                <div class="action-label">Chat with Support</div>
+                                <div class="action-desc">Get instant help from our team</div>
+                            </div>
+                            <button class="action-btn">Chat</button>
+                        </div>
+
+                        <div class="action-item recommended">
+                            <div class="action-icon">📊</div>
+                            <div class="action-content">
+                                <div class="action-label">View EMI Calculator</div>
+                                <div class="action-desc">Calculate your monthly payments</div>
+                            </div>
+                            <button class="action-btn">Calculate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar collapse/expand functionality
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        // Initialize sidebar state from localStorage
+        const sidebarState = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarState) {
+            sidebar.classList.add('collapsed');
+            updateToggleButton();
+        }
+
+        // Toggle button click handler
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+            updateToggleButton();
+
+            // Save state to localStorage
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        });
+
+        // Update toggle button icon and title
+        function updateToggleButton() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            if (isCollapsed) {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                toggleBtn.title = 'Expand sidebar';
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                toggleBtn.title = 'Collapse sidebar';
+            }
+        }
+
+        // Only prevent default link behavior for placeholder links
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function (e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Function to update user profile in sidebar
+        function updateUserProfile(name, email, initials) {
+            const userNameElement = document.getElementById('userNameBottom');
+            const userEmailElement = document.getElementById('userEmailBottom');
+            const userAvatarElement = document.getElementById('userAvatarBottom');
+
+            if (userNameElement) userNameElement.textContent = name;
+            if (userEmailElement) userEmailElement.textContent = email;
+            if (userAvatarElement) userAvatarElement.textContent = initials;
+        }
+
+        // Load user profile from localStorage on page load
+        function loadUserProfile() {
+            const savedName = localStorage.getItem('userName');
+            const savedEmail = localStorage.getItem('userEmail');
+            const savedInitials = localStorage.getItem('userInitials');
+
+            if (savedName && savedEmail && savedInitials) {
+                updateUserProfile(savedName, savedEmail, savedInitials);
+            }
+        }
+
+        // Load user profile when page loads
+        loadUserProfile();
+
+        // Logout button functionality
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Clear user data
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userInitials');
+                localStorage.removeItem('isLoggedIn');
+                // Redirect to login
+                window.location.href = './login.html';
+            });
+        }
+    </script>
+</body>
+
+</html>

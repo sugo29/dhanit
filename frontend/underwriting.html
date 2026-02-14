@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Underwriting - DhanitAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-page: #f0f4f8;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            --sidebar-width: 64px;
+            --sidebar-expanded: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sidebar {
+            width: var(--sidebar-expanded);
+            background: #1e3a8a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 24px 0;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            transition: width 0.25s ease-in-out;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-width);
+            align-items: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 32px;
+            padding: 0 20px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            gap: 12px;
+        }
+
+        .sidebar.collapsed .logo {
+            justify-content: center;
+            padding: 0;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            margin-left: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .toggle-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            margin-left: 0;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .nav-items {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 16px 20px 8px;
+            opacity: 1;
+            transition: opacity 0.2s;
+            width: 100%;
+            display: block;
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 0;
+            border-radius: 0;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 14px;
+            justify-content: center;
+            width: auto;
+            min-width: 64px;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left: none;
+            padding-left: 20px;
+        }
+
+        .sidebar.collapsed .nav-item.active {
+            padding-left: 14px;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        .nav-label {
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+
+        .sidebar.collapsed .nav-label {
+            display: none;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transition: margin-left 0.25s ease-in-out;
+        }
+
+        .top-nav {
+            height: 64px;
+            background-color: transparent;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 32px;
+            flex-shrink: 0;
+            box-shadow: none;
+            position: relative;
+            z-index: 3;
+            gap: 20px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .page-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: transparent;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header {
+            margin-bottom: 8px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .underwriting-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .underwriting-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metric-value.good {
+            color: var(--success);
+        }
+
+        .metric-value.warning {
+            color: var(--warning);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            .underwriting-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 16px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        /* CONFIDENCE BANNER */
+        .confidence-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .confidence-banner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .confidence-banner-content {
+            flex: 1;
+        }
+
+        .confidence-banner-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 4px;
+        }
+
+        .confidence-banner-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* INTERPRETATION BADGES */
+        .metric-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .metric-badge.excellent {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .metric-badge.good {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--primary);
+        }
+
+        .metric-badge.safe {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .metric-badge.within-limits {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .metric-badge.info {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* RISK BREAKDOWN */
+        .risk-breakdown {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .risk-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .risk-title i {
+            color: var(--primary);
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .risk-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .risk-label {
+            width: 160px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .risk-label i {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .risk-bar-wrapper {
+            flex: 1;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .risk-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .risk-bar-fill.excellent {
+            background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+        }
+
+        .risk-bar-fill.very-good {
+            background: linear-gradient(90deg, #34d399 0%, #86efac 100%);
+        }
+
+        .risk-bar-fill.acceptable {
+            background: linear-gradient(90deg, var(--warning) 0%, #fcd34d 100%);
+        }
+
+        .risk-rating {
+            width: 80px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .risk-rating.excellent {
+            color: var(--success);
+        }
+
+        .risk-rating.very-good {
+            color: #059669;
+        }
+
+        .risk-rating.acceptable {
+            color: var(--warning);
+        }
+
+        /* HERO DECISION CARD */
+        .underwriting-card.hero {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.12);
+        }
+
+        .decision-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .decision-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .decision-status {
+            flex: 1;
+        }
+
+        .decision-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .decision-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .decision-reason {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--success);
+        }
+
+        /* WHY THESE TERMS */
+        .terms-explanation {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .terms-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terms-title i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .terms-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .terms-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .terms-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .terms-list li i {
+            color: var(--success);
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        /* WHAT HAPPENS NEXT */
+        .next-steps-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .next-steps-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .next-steps-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .next-steps-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .next-steps-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 10px;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .process-step.completed {
+            color: var(--success);
+        }
+
+        .process-step.current {
+            color: var(--primary);
+        }
+
+        .process-step.upcoming {
+            color: var(--text-muted);
+        }
+
+        .process-arrow {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* ENHANCED CARD */
+        .underwriting-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* DOWNLOAD SUMMARY */
+        .download-summary {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-download i {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">Dhanit</div>
+            <button class="toggle-btn" id="toggleBtn" title="Collapse sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="nav-items">
+            <div class="nav-section-title">My Loan</div>
+            <a href="dashboard.html" class="nav-item" title="Dashboard">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="loan-applications.html" class="nav-item" title="Loan Applications">
+                <div class="nav-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span class="nav-label">Loan Applications</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Process</div>
+            <a href="chatbot.html" class="nav-item" title="Chatbot">
+                <div class="nav-icon"><i class="fas fa-robot"></i></div>
+                <span class="nav-label">Chatbot</span>
+            </a>
+            <a href="verification.html" class="nav-item" title="Verification">
+                <div class="nav-icon"><i class="fas fa-search"></i></div>
+                <span class="nav-label">Verification</span>
+            </a>
+            <a href="underwriting.html" class="nav-item active" title="Underwriting">
+                <div class="nav-icon"><i class="fas fa-calculator"></i></div>
+                <span class="nav-label">Underwriting</span>
+            </a>
+            <a href="sanctions.html" class="nav-item" title="Sanctions">
+                <div class="nav-icon"><i class="fas fa-stamp"></i></div>
+                <span class="nav-label">Sanctions</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 16px;">Insights</div>
+            <a href="analytics.html" class="nav-item" title="Insights & Analytics">
+                <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                <span class="nav-label">Insights & Analytics</span>
+            </a>
+            <a href="settings.html" class="nav-item" title="Settings">
+                <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                <span class="nav-label">Settings</span>
+            </a>
+        </div>
+
+        <!-- USER PROFILE SECTION AT BOTTOM -->
+        <div class="user-section">
+            <div class="user-profile-bottom">
+                <div class="user-avatar-bottom" id="userAvatarBottom">SR</div>
+                <div class="user-info-bottom">
+                    <div class="user-name-bottom" id="userNameBottom">Sarah Rodriguez</div>
+                    <div class="user-email-bottom" id="userEmailBottom">sarah@email.com</div>
+                </div>
+            </div>
+            <button class="logout-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-nav">
+            <div style="flex: 1;">
+                <h1 class="page-title" style="margin: 0; font-size: 18px;">Underwriting</h1>
+            </div>
+            <div class="nav-right">
+                <button class="nav-icon-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="nav-divider"></div>
+                <div class="user-profile">
+                    <div class="user-avatar">SR</div>
+                    <div class="user-name">Sarah Rodriguez</div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                </div>
+                <button class="nav-icon-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Underwriting</h1>
+                <p class="page-subtitle">Review your loan underwriting analysis and financial assessment</p>
+            </div>
+
+            <!-- CONFIDENCE BANNER -->
+            <div class="confidence-banner">
+                <div class="confidence-banner-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="confidence-banner-content">
+                    <div class="confidence-banner-title">Your financial profile looks strong</div>
+                    <div class="confidence-banner-text">Based on income, credit score, and verified documents, your loan
+                        has been approved with favorable terms.</div>
+                </div>
+            </div>
+
+            <!-- RISK BREAKDOWN -->
+            <div class="risk-breakdown">
+                <div class="risk-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Overall Risk Assessment
+                </div>
+                <div class="risk-item">
+                    <span class="risk-label"><i class="fas fa-briefcase"></i> Income Stability</span>
+                    <div class="risk-bar-wrapper">
+                        <div class="risk-bar-fill excellent" style="width: 95%;"></div>
+                    </div>
+                    <span class="risk-rating excellent">Excellent</span>
+                </div>
+                <div class="risk-item">
+                    <span class="risk-label"><i class="fas fa-chart-bar"></i> Credit Behaviour</span>
+                    <div class="risk-bar-wrapper">
+                        <div class="risk-bar-fill very-good" style="width: 88%;"></div>
+                    </div>
+                    <span class="risk-rating very-good">Very Good</span>
+                </div>
+                <div class="risk-item">
+                    <span class="risk-label"><i class="fas fa-balance-scale"></i> Debt Load</span>
+                    <div class="risk-bar-wrapper">
+                        <div class="risk-bar-fill acceptable" style="width: 70%;"></div>
+                    </div>
+                    <span class="risk-rating acceptable">Acceptable</span>
+                </div>
+            </div>
+
+            <div class="underwriting-grid">
+                <!-- Financial Assessment -->
+                <div class="underwriting-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Financial Assessment
+                    </h2>
+                    <div class="metric-row">
+                        <span class="metric-label">Monthly Income</span>
+                        <span class="metric-value">₹85,000</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Monthly Expenses</span>
+                        <span class="metric-value">₹35,000 <span class="metric-badge info">Normal</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Proposed EMI</span>
+                        <span class="metric-value">₹1,540</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">EMI to Income Ratio</span>
+                        <span class="metric-value good">1.8% <span class="metric-badge safe">Very Safe</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Debt to Income Ratio</span>
+                        <span class="metric-value good">41% <span class="metric-badge within-limits">Within
+                                Limits</span></span>
+                    </div>
+                </div>
+
+                <!-- Credit Score Analysis -->
+                <div class="underwriting-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-star"></i>
+                        Credit Score Analysis
+                    </h2>
+                    <div class="metric-row">
+                        <span class="metric-label">Credit Score</span>
+                        <span class="metric-value good">745 <span class="metric-badge excellent">Excellent</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Score Category</span>
+                        <span class="metric-value good">Good</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Payment History</span>
+                        <span class="metric-value good">Excellent</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Credit Utilization</span>
+                        <span class="metric-value good">28% <span class="metric-badge safe">Healthy</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Risk Level</span>
+                        <span class="metric-value good">Low</span>
+                    </div>
+                </div>
+
+                <!-- Document Verification -->
+                <div class="underwriting-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-file-alt"></i>
+                        Document Verification
+                    </h2>
+                    <div class="metric-row">
+                        <span class="metric-label">Salary Slip</span>
+                        <span class="metric-value good">✓ Verified</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Bank Statement</span>
+                        <span class="metric-value good">✓ Verified</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">ID Proof</span>
+                        <span class="metric-value good">✓ Verified</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Address Proof</span>
+                        <span class="metric-value good">✓ Verified</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Employment Verification</span>
+                        <span class="metric-value good">✓ Verified</span>
+                    </div>
+                </div>
+
+                <!-- HERO - Underwriting Decision -->
+                <div class="underwriting-card hero">
+                    <h2 class="card-title">
+                        <i class="fas fa-thumbs-up"></i>
+                        Underwriting Decision
+                    </h2>
+                    <div class="decision-header">
+                        <div class="decision-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="decision-status">
+                            <div class="decision-label">Overall Status</div>
+                            <div class="decision-value">Approved</div>
+                        </div>
+                    </div>
+                    <div class="decision-reason">
+                        Your loan has been approved based on strong income stability and excellent credit behavior.
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Loan Amount</span>
+                        <span class="metric-value">₹85,000</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Interest Rate</span>
+                        <span class="metric-value">8.9%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Tenure</span>
+                        <span class="metric-value">60 months</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Approval Date</span>
+                        <span class="metric-value">Jan 20, 2024</span>
+                    </div>
+
+                    <!-- WHY THESE TERMS -->
+                    <div class="terms-explanation">
+                        <div class="terms-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Why these terms?
+                        </div>
+                        <ul class="terms-list">
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Interest rate is lower due to your strong credit score (745)</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>EMI kept minimal due to low debt-to-income ratio</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-circle"></i>
+                                <span>Tenure optimized for affordable monthly payments</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- DOWNLOAD SUMMARY -->
+                    <div class="download-summary">
+                        <button class="btn-download">
+                            <i class="fas fa-file-download"></i>
+                            Download underwriting summary
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WHAT HAPPENS NEXT -->
+            <div class="next-steps-section">
+                <div class="next-steps-header">
+                    <div class="next-steps-icon">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="next-steps-title">What happens next?</div>
+                </div>
+                <div class="next-steps-content">
+                    Your loan will now move to <strong>Sanction</strong>, where final documents will be prepared and the
+                    disbursement process will begin.
+                </div>
+                <div class="process-flow">
+                    <div class="process-step completed">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verification</span>
+                    </div>
+                    <i class="fas fa-chevron-right process-arrow"></i>
+                    <div class="process-step current">
+                        <i class="fas fa-calculator"></i>
+                        <span>Underwriting</span>
+                    </div>
+                    <i class="fas fa-chevron-right process-arrow"></i>
+                    <div class="process-step upcoming">
+                        <i class="fas fa-stamp"></i>
+                        <span>Sanction</span>
+                    </div>
+                    <i class="fas fa-chevron-right process-arrow"></i>
+                    <div class="process-step upcoming">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Disbursement</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        const sidebarState = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarState) {
+            sidebar.classList.add('collapsed');
+            updateToggleButton();
+        }
+
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+            updateToggleButton();
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        });
+
+        function updateToggleButton() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            if (isCollapsed) {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                toggleBtn.title = 'Expand sidebar';
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                toggleBtn.title = 'Collapse sidebar';
+            }
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function (e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

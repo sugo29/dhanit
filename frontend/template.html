@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Title - DhanitAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sidebar-styles.css">
+    <style>
+        /* Page-specific styles here */
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR (loaded from sidebar.html) -->
+    <div id="sidebar-container"></div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP NAV -->
+        <div class="top-nav">
+            <div style="flex: 1;">
+                <h1 class="page-title" style="margin: 0; font-size: 18px;">Page Title</h1>
+            </div>
+            <div class="nav-right">
+                <button class="nav-icon-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="nav-divider"></div>
+                <div class="user-profile">
+                    <div class="user-avatar">SR</div>
+                    <div class="user-name">Sarah Rodriguez</div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                </div>
+                <button class="nav-icon-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Page Title</h1>
+                <p class="page-subtitle">Page description goes here</p>
+            </div>
+
+            <!-- Your page content here -->
+        </div>
+    </div>
+
+    <!-- Load sidebar component -->
+    <script>
+        // Load sidebar HTML
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                const container = document.getElementById('sidebar-container');
+                container.innerHTML = html;
+                
+                // Re-initialize sidebar functionality after loading
+                initSidebar();
+            })
+            .catch(error => console.error('Error loading sidebar:', error));
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleBtn');
+
+            if (!sidebar || !toggleBtn) return;
+
+            // Initialize sidebar state from localStorage
+            const sidebarState = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarState) {
+                sidebar.classList.add('collapsed');
+                updateToggleButton();
+            }
+
+            // Toggle button click handler
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                sidebar.classList.toggle('collapsed');
+                updateToggleButton();
+                
+                // Save state to localStorage
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            });
+
+            // Update toggle button icon and title
+            function updateToggleButton() {
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                if (isCollapsed) {
+                    toggleBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    toggleBtn.title = 'Expand sidebar';
+                } else {
+                    toggleBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                    toggleBtn.title = 'Collapse sidebar';
+                }
+            }
+
+            // Set active nav item based on current page
+            function setActiveNavItem() {
+                const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+                const navItems = document.querySelectorAll('.nav-item');
+                
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    const href = item.getAttribute('href');
+                    if (href === currentPage || (currentPage === '' && href === 'dashboard.html')) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+
+            setActiveNavItem();
+        }
+    </script>
+</body>
+</html>

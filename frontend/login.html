@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DhanitAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-page: #f0f4f8;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('../assets/dashboardBg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input.has-icon {
+            padding-right: 48px;
+        }
+
+        .form-input.error {
+            border-color: var(--danger);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .input-icon:hover {
+            color: var(--text-secondary);
+        }
+
+        .continue-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .continue-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .continue-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 8px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-error.show {
+            display: flex;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* OTP Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .otp-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .otp-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .otp-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .otp-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .otp-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .otp-email {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* OTP Input Boxes */
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .otp-input.error {
+            border-color: var(--danger);
+        }
+
+        .otp-input.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Timer */
+        .otp-timer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .timer-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .timer-value.expired {
+            color: var(--danger);
+        }
+
+        /* Resend */
+        .resend-section {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .resend-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .resend-btn:hover:not(:disabled) {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .resend-btn:disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .otp-error {
+            text-align: center;
+            font-size: 13px;
+            color: var(--danger);
+            margin-top: 12px;
+            display: none;
+        }
+
+        .otp-error.show {
+            display: block;
+        }
+
+        /* Close button */
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        .otp-modal {
+            position: relative;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">D</div>
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to continue to Dhanit</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <div class="form-input-wrapper">
+                        <input type="email" class="form-input" id="emailInput" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-error" id="emailError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Please enter a valid email address</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="form-input-wrapper">
+                        <input type="password" class="form-input has-icon" id="passwordInput"
+                            placeholder="Enter your password" required>
+                        <span class="input-icon" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="form-error" id="passwordError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Invalid email or password</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginBtn">
+                    <span id="loginBtnText">Continue</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="signup.html">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="otp-modal">
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="otp-header">
+                <div class="otp-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h2 class="otp-title">Verify Your Email</h2>
+                <p class="otp-subtitle">
+                    We've sent a 6-digit verification code to<br>
+                    <span class="otp-email" id="otpEmail">your@email.com</span>
+                </p>
+            </div>
+
+            <div class="otp-inputs">
+                <input type="text" class="otp-input" maxlength="1" data-index="0">
+                <input type="text" class="otp-input" maxlength="1" data-index="1">
+                <input type="text" class="otp-input" maxlength="1" data-index="2">
+                <input type="text" class="otp-input" maxlength="1" data-index="3">
+                <input type="text" class="otp-input" maxlength="1" data-index="4">
+                <input type="text" class="otp-input" maxlength="1" data-index="5">
+            </div>
+
+            <div class="otp-timer">
+                <span class="timer-text">Code expires in </span>
+                <span class="timer-value" id="timerDisplay">01:00</span>
+            </div>
+
+            <div class="otp-error" id="otpError">
+                Incorrect verification code
+            </div>
+
+            <button class="btn-primary" id="verifyBtn" disabled>
+                Verify
+            </button>
+
+            <div class="resend-section">
+                <p class="resend-text">Didn't receive the code?</p>
+                <button class="resend-btn" id="resendBtn" disabled>
+                    Resend Code
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        // OTP Modal Elements
+        const otpModal = document.getElementById('otpModal');
+        const closeModal = document.getElementById('closeModal');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const resendBtn = document.getElementById('resendBtn');
+        const otpError = document.getElementById('otpError');
+        const otpEmail = document.getElementById('otpEmail');
+
+        // State
+        let currentOTP = null;
+        let otpTimer = null;
+        let timeRemaining = 60;
+        let userEmail = '';
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Generate random 6-digit OTP
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Start OTP timer
+        function startTimer() {
+            timeRemaining = 60;
+            updateTimerDisplay();
+            resendBtn.disabled = true;
+
+            otpTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 30) {
+                    resendBtn.disabled = false;
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(otpTimer);
+                    timerDisplay.classList.add('expired');
+                    timerDisplay.textContent = 'Expired';
+                    currentOTP = null;
+                }
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timerDisplay.classList.remove('expired');
+        }
+
+        // Send OTP (simulated - in real app this would call API)
+        function sendOTP() {
+            currentOTP = generateOTP();
+            console.log('OTP sent to ' + userEmail + ': ' + currentOTP); // For demo purposes
+
+            // Show simulated OTP alert for demo
+            alert('Demo Mode: Your OTP is ' + currentOTP + '\n\n(In production, this would be sent to your email)');
+
+            startTimer();
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Reset errors
+            emailError.classList.remove('show');
+            passwordError.classList.remove('show');
+            emailInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+
+            let valid = true;
+
+            // Validate email
+            if (!validateEmail(emailInput.value)) {
+                emailInput.classList.add('error');
+                emailError.classList.add('show');
+                valid = false;
+            }
+
+            // Validate password (minimum 6 characters for demo)
+            if (passwordInput.value.length < 6) {
+                passwordInput.classList.add('error');
+                passwordError.classList.add('show');
+                valid = false;
+            }
+
+            if (valid) {
+                // Show loading state
+                loginBtn.disabled = true;
+                loginBtnText.innerHTML = '<i class="fas fa-spinner spinner"></i> Verifying...';
+
+                // Simulate API validation
+                setTimeout(() => {
+                    loginBtn.disabled = false;
+                    loginBtnText.textContent = 'Continue';
+
+                    // Store email and open OTP modal
+                    userEmail = emailInput.value;
+                    otpEmail.textContent = userEmail;
+
+                    // Open OTP modal
+                    otpModal.classList.add('show');
+
+                    // Generate and send OTP
+                    sendOTP();
+
+                    // Focus first OTP input
+                    otpInputs[0].focus();
+                }, 1000);
+            }
+        });
+
+        // OTP input handling
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function (e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                // Move to next input
+                if (this.value && index < 5) {
+                    otpInputs[index + 1].focus();
+                }
+
+                // Check if all inputs filled
+                checkOTPComplete();
+            });
+
+            input.addEventListener('keydown', function (e) {
+                // Move to previous input on backspace
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            // Handle paste
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').slice(0, 6);
+
+                pastedData.split('').forEach((char, i) => {
+                    if (otpInputs[i] && /[0-9]/.test(char)) {
+                        otpInputs[i].value = char;
+                    }
+                });
+
+                checkOTPComplete();
+            });
+        });
+
+        // Check if OTP is complete
+        function checkOTPComplete() {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            verifyBtn.disabled = otp.length !== 6;
+        }
+
+        // Get entered OTP
+        function getEnteredOTP() {
+            return Array.from(otpInputs).map(input => input.value).join('');
+        }
+
+        // Verify OTP
+        verifyBtn.addEventListener('click', function () {
+            const enteredOTP = getEnteredOTP();
+
+            // Hide previous error
+            otpError.classList.remove('show');
+
+            // Check if OTP expired
+            if (!currentOTP || timeRemaining <= 0) {
+                otpError.textContent = 'Verification code expired';
+                otpError.classList.add('show');
+                otpInputs.forEach(input => input.classList.add('error'));
+                return;
+            }
+
+            // Verify OTP
+            if (enteredOTP === currentOTP) {
+                // Success
+                otpInputs.forEach(input => {
+                    input.classList.remove('error');
+                    input.classList.add('success');
+                });
+
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verified';
+
+                // Extract name from email and save user data
+                const nameParts = userEmail.split('@')[0].split('.');
+                const firstName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1) : 'User';
+                const lastName = nameParts[1] ? nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1) : '';
+                const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+                const initials = (firstName.charAt(0) + (lastName ? lastName.charAt(0) : '')).toUpperCase();
+
+                localStorage.setItem('userName', fullName);
+                localStorage.setItem('userEmail', userEmail);
+                localStorage.setItem('userInitials', initials);
+                localStorage.setItem('isLoggedIn', 'true');
+
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    window.location.href = './dashboard.html';
+                }, 1000);
+            } else {
+                // Incorrect OTP
+                otpError.textContent = 'Incorrect verification code';
+                otpError.classList.add('show');
+                otpInputs.forEach(input => input.classList.add('error'));
+            }
+        });
+
+        // Resend OTP
+        resendBtn.addEventListener('click', function () {
+            // Clear previous OTP
+            clearInterval(otpTimer);
+
+            // Clear inputs
+            otpInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('error', 'success');
+            });
+
+            // Clear error
+            otpError.classList.remove('show');
+            verifyBtn.disabled = true;
+
+            // Generate and send new OTP
+            sendOTP();
+
+            // Focus first input
+            otpInputs[0].focus();
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', function () {
+            clearInterval(otpTimer);
+            otpModal.classList.remove('show');
+
+            // Reset OTP inputs
+            otpInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('error', 'success');
+            });
+
+            otpError.classList.remove('show');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = 'Verify';
+        });
+
+        // Clear errors on input
+        emailInput.addEventListener('input', function () {
+            this.classList.remove('error');
+            emailError.classList.remove('show');
+        });
+
+        passwordInput.addEventListener('input', function () {
+            this.classList.remove('error');
+            passwordError.classList.remove('show');
+        });
+    </script>
+</body>
+
+</html>
