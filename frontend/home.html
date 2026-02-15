@@ -213,6 +213,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
     }
     .chat-bubble {
       background: #fff;
@@ -357,6 +367,28 @@
       object-fit: contain;
       filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.08));
       animation: float 3s ease-in-out infinite;
+    }
+    
+    /* Logo Styling */
+    .dhanit-logo {
+      max-width: 100%;
+      height: auto;
+      width: 140px;
+      border-radius: 16px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+      animation: pulse-bounce 2.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-bounce {
+      0%, 100% { 
+        transform: translateY(0px) scale(1);
+        opacity: 1;
+      }
+      50% { 
+        transform: translateY(-15px) scale(1.05);
+        opacity: 0.9;
+      }
     }
     
     /* Floating Icons */
@@ -1017,7 +1049,10 @@ document.addEventListener('DOMContentLoaded', function() {
           </svg>
         </div>
       </div>
-      <img src="../assets/homeRobot.jpg" alt="Dhanit AI Robot Assistant" class="robot-image" />
+      <div class="hero-content">
+        <img src="../assets/Dhanitlogo.jpg" alt="Dhanit Logo" class="dhanit-logo" />
+        <img src="../assets/homeRobot.jpg" alt="Dhanit AI Robot Assistant" class="robot-image" />
+      </div>
     </div>
   </div>
 </section>
